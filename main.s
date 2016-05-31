@@ -31,7 +31,8 @@ haltLoop$:
 
 PixelLoopManager:
   push {lr}
-  bl DrawBlock
+  ldr r0, =0x0000
+  bl FillScreen
   pop {lr}
   mov pc, lr
 
@@ -88,10 +89,10 @@ DrawBlock:
 
 
 
-
+//r0 - Contains colour to fill screen with
 FillScreen:
   pop {r4, r10, lr}
-
+  colour .req r10
   row_size .req r6
   column_size .req r7
   row_counter	.req	r4
@@ -101,6 +102,7 @@ FillScreen:
   mov row_size, #768
   mov column_size, #1024
   mov offset, #1
+  mov colour, r0
 
   mov row_counter, #0
 
@@ -118,8 +120,8 @@ FillScreen:
       bgt fill_loop_row
 
       add offset, column_counter
-      ldr r2, =0xFF00
 
+      mov r2, colour
       mov r0, column_counter
       mov r1, row_counter
       bl DrawPixel
