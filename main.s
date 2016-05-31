@@ -19,7 +19,8 @@ main:
   //main_loop:
   //cmp r2, r8
   //bge haltLoop$
-
+  ldr r0, =0x0FF
+  bl FillScreen
   bl PixelLoopManager
   //lsl r2, #1
   //b main_loop
@@ -31,14 +32,37 @@ haltLoop$:
 
 PixelLoopManager:
   push {lr}
-  ldr r0, =0x0000
-  bl FillScreen
+
+  //bl DrawBlock_test
   pop {lr}
   mov pc, lr
 
+
+DrawBlock_test:
+  push {lr}
+  mov r0, #0
+  start_test:
+    cmp r0, #32
+    bgt done_test
+
+    ldr r8, =car
+    ldrh r2, [r8, r0]
+
+    mov r1, #0
+
+    bl DrawPixel
+    add r0, #1
+
+    b start_test
+
+  done_test:
+    pop {lr}
+    mov pc, lr
+
+
 //assumes blocks are 32x32
 DrawBlock:
-  pop {r4, r10, lr}
+  push {r4, r10, lr}
 
   row_size .req r6
   column_size .req r7
@@ -83,43 +107,40 @@ DrawBlock:
     .unreq row_counter
     .unreq column_counter
     .unreq offset
-
-    push {r4 - r10, lr}
+    pop {r4 - r10, lr}
     mov pc, lr
 
 
 
 //r0 - Contains colour to fill screen with
 FillScreen:
-  pop {r4, r10, lr}
+  push {r4 - r10, lr}
+
   colour .req r10
   row_size .req r6
   column_size .req r7
   row_counter	.req	r4
   column_counter	.req	r5
-  offset .req   r9
+
 
   mov row_size, #768
   mov column_size, #1024
-  mov offset, #1
+
   mov colour, r0
 
   mov row_counter, #0
 
   fill_loop_row:
     cmp row_counter, row_size
-    bgt fill_done_block
+    bge fill_done_block
 
     mov column_counter, #0
-
     add row_counter, #1
-    lsl offset, #1
+
 
     fill_loop_column:
       cmp column_counter, column_size
-      bgt fill_loop_row
-
-      add offset, column_counter
+      bge fill_loop_row
 
       mov r2, colour
       mov r0, column_counter
@@ -130,14 +151,12 @@ FillScreen:
       b fill_loop_column
 
   fill_done_block:
-
     .unreq row_size
     .unreq column_size
     .unreq row_counter
     .unreq column_counter
-    .unreq offset
 
-    push {r4 - r10, lr}
+    pop {r4 - r10, lr}
     mov pc, lr
 
 
