@@ -50,21 +50,21 @@ mBoxEmptyLoop$:
 
 	// if not, we need to read another message from the mailbox
 	bne		mBoxEmptyLoop$
-
+	
 	ldr		r0,	=FrameBufferInit
 	ldr		r1,	[r0, #0x04]	//load the request/response word from buffer
 	teq		r1,	#0x80000000	//test is the request was successful
-	beq		pointerWaitLoop$
+	beq		pointerWaitLoop$	
 	movne		r0, 	#0		//return 0 if the request failed
-	bxne		lr
+	bxne		lr	
 
 pointerWaitLoop$:
-	ldr	r0, 	=FrameBuffer
+	ldr	r0, 	=FrameBuffer 
 	ldr	r0, 	[r0]
 	teq	r0,	#0	//test if framebuffer pointer has been set
-
+	
 	beq	pointerWaitLoop$
-
+	
 	ldr 	r3, =FrameBufferPointer
 	str	r0, [r3]
 
@@ -102,7 +102,7 @@ FrameBufferInit:
 	.int	8			//length of value
 FrameBuffer:
 	.int	0			//value will be set to framebuffer pointer
-	.int	0			//value will be set to framebuffer size
+	.int	0			//value will be set to framebuffer size			
 
 	.int	0			//end tag, indicates the end of the buffer
 
@@ -110,3 +110,5 @@ FrameBuffer:
 .globl FrameBufferPointer
 FrameBufferPointer:
 	.int	0
+
+
