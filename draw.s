@@ -251,14 +251,88 @@ noPixel$$:
 	pop		{r4-r8, pc}
 
 ///////////////////////////////////////////////////////////////////////////////////////
+.globl Draw_Int
+Draw_Int:
+	push 	{r4-r10, lr}	
 
+	mov r9, r0
+	mov r1, #0
+
+hundredLoop:
+	cmp r9, #100
+	
+	subge r9, #100
+	addge r1, #1
+	bge    hundredLoop
+
+hundredLoopEnd:
+	add r1, #48	
+	ldr	r2, =HundredBuff
+	str	r1, [r2]
+
+	mov	r0, #150
+	mov	r1, #100
+	ldr	r2, =0xFF0F
+	ldr	r3, =HundredBuff
+	bl	Draw_String	
+	
+	mov r1, #0
+
+tenLoop:
+	cmp r9, #10
+	subge r9, #10
+	addge r1, #1
+	bge    tenLoop
+
+tenLoopEnd:
+	add r1, #48	
+	ldr	r2, =TenBuff
+	str	r1, [r2]
+
+	mov	r0, #160
+	mov	r1, #100
+	ldr	r2, =0xF000
+	ldr	r3, =TenBuff
+	bl	Draw_String
+
+	mov r1, #0
+
+oneLoop:
+	cmp r9, #1
+	subge r9, #1
+	addge r1, #1
+	bge    oneLoop
+
+Draw_Int_Done:
+	add 	r1, #48
+	ldr	r2, =OneBuff
+	str	r1, [r2]
+
+	mov	r0, #170
+	mov	r1, #100
+	ldr	r2, =0x0FFF
+	ldr	r3, =OneBuff
+	bl	Draw_String	
+
+	pop 	{r4-r10, lr}
+	mov	pc, lr
+
+/////////////////////////////////////////////////////////////////////
 
 .section .data
-.align 4
+.align	4
 
-
-//
 font:
 	.incbin "font.bin"
+
+HundredBuff:
+	.word 0
+TenBuff:
+	.word 0
+OneBuff:
+	.word 0
+//
+//
+
 
 
