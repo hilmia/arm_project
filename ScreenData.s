@@ -3,11 +3,27 @@
 
 //ScreenData.s
 //Functions:
-//Screen_Data_Change, Screen_Data_Print
+//Screen_Data_Change, Screen_Data_Print, Screen_Data_Print_Black
 
 
 .section .text
 .align 4
+
+
+.globl Screen_Data_Init
+Screen_Data_Init:
+	push	{r4-r10, lr}
+
+	ldr	r3, =Fuel_Storage	
+	mov	r0, #100
+	strb	r0, [r3]
+
+	ldr	r3, =Live_Storage	
+	mov	r0, #51
+	strb	r0, [r3]
+
+	pop	{r4-r10, lr}
+	mov	pc, lr
 
 
 //Screen_Data_Change
