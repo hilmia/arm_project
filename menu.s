@@ -4,7 +4,7 @@
 //Menu.s
 //Functions:
 //Print_Menu_Start, Print_Menu_Quit, Print_Menu_Black_Start, Print_Menu_Black_Quit
-//Print_Menu_Starting_Game, Print_Menu_Quitting_Game, Menu_Controller
+//Print_Menu_Starting_Game, Print_Menu_Quitting_Game, Menu_Controller, Game_End_Menu
 //Game_Over, Game_Win
 
 
@@ -399,6 +399,45 @@ Game_Win:
 	pop	{r4-r10, lr}
 	mov	pc, lr
 
+//Game_End_Menu
+//Args: None
+//Return: None
+//This function waits for either start or select input and will restart the game or
+//jump back to main menu.
+.globl Game_End_Menu
+Game_End_Menu:
+	push	{r4-r10, lr}
+Game_End_Wait:
+	bl	Read_Data			//read in data
+
+	//no input
+	ldr     r1, =0xFFFF		
+    	cmp     r0, r1
+    	beq     Menu_Wait
+
+	//select
+   	ldr	r1, =0xFFFB	
+    	cmp	r0, r1
+	beq	Game_End_Select
+	
+	//start
+	ldr	r1, =0xFFF7
+	cmp	r0, r1
+	beq	Game_End_Start
+
+	b	Game_End_Wait
+
+Game_End_Select:
+	//branch to _start
+	b	Game_End_Done
+
+Game_End_Start:
+	//reinitialize game
+	b	Game_End_Done
+
+Game_End_Done:
+	pop	{r4-r10, lr}
+	mov	pc, lr
 
 //Strings
 .section .data

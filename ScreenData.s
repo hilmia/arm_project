@@ -3,7 +3,7 @@
 
 //ScreenData.s
 //Functions:
-//Screen_Data_Change, Screen_Data_Print, Screen_Data_Print_Black
+//Screen_Data_Change, Screen_Data_Print
 
 
 .section .text
@@ -47,6 +47,11 @@ Change_Fuel:
 		
 	ldrb		r4, [r8]		//Load Value
 	sub		r4, #1			//*****Minus Change
+
+	cmp		r4, #0
+	moveq		r0, #0
+	beq		Game_Over
+
 	strb		r4, [r8]		//Store
 
 	b		Screen_Data_Change_Done
@@ -56,6 +61,11 @@ Change_Life:
 		
 	ldrb		r4, [r8]		//Load Value
 	sub		r4, #1			//*****Minus Change
+
+	cmp		r4, #0
+	moveq		r0, #1
+	beq		Game_Over	
+
 	strb		r4, [r8]		//Store
 
 Screen_Data_Change_Done:
@@ -103,45 +113,6 @@ Screen_Data_Print:
 	mov	pc, lr
 	
 
-//Screen_Data_Print_Black
-//Args: None
-//Return: None
-//This function loads and prints out the values of the Fuel/Life and prints them over with black
-//them to the screen
-.globl Screen_Data_Print_Black
-Screen_Data_Print_Black:
-	push	{r4-r10, lr}
-
-//Fuel_Display
-	mov	r0, #100		//Print out Fuel:
-	mov	r1, #100
-	ldr	r2, =0x0000
-	ldr	r3, =Fuel_Display
-	bl	Draw_String
-
-	ldr	r3, =Fuel_Storage	//Print out Fuel Value
-	ldrb	r0, [r3]
-	bl	Draw_Int_Black
-
-
-//Life_Display
-	mov	r0, #100		//Print out Lives:
-	mov	r1, #115
-	ldr	r2, =0x0000
-	ldr	r3, =Life_Display
-	bl	Draw_String
-	
-	mov	r0, #160		//Print out Lives Value
-	mov	r1, #115
-	ldr	r2, =0x0000
-
-	ldr	r3, =Live_Storage
-
-	bl	Draw_String
-
-	pop	{r4-r10, lr}
-	mov	pc, lr
-	
 //Strings and Fuel/ Life Storage
 .section .data
 .align 4

@@ -3,7 +3,7 @@
 
 //Draw.s
 //Functions:
-//DrawPixel, Draw_Char, Draw_String, FillScreen, DrawCharB, Draw_Int
+//DrawPixel, Draw_Char, Draw_String, FillScreen, FillScreen_M, DrawCharB, Draw_Int
 //Function DrawPixel, DrawCharB Taken from Tutorial 8 
 
 
