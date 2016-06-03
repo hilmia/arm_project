@@ -1,13 +1,20 @@
-//
+//CPSC 359 - Assignment 3 - RoadFighter - draw.s
+//Kyle Ostrander 10128524, Carlin Liu 10123584, Hilmi Abou-Saleh 10125373
+
+//Draw.s
+//Functions:
+//DrawPixel, Draw_Char, Draw_String, FillScreen, DrawCharB, Draw_Int
+//Function DrawPixel, DrawCharB Taken from Tutorial 8 
+
+
 .section .text
 .align 4
 
-/* Draw Pixel
- *  r0 - x
- *  r1 - y
- *  r2 - color
- */
 
+//DrawPixel
+//Args: R0 = x, R1 = y, R2 = Colour
+//Return: None
+//Function Taken from Tutorial 8 
 DrawPixel:
 	push	{r4}
 
@@ -29,14 +36,12 @@ DrawPixel:
 	bx		lr
 
 
-//
 //Draw_Char
+//Args: R0 = x, R1 = y, R2 = Colour, R3 = Character
+//Return: None
+//This function is a more general for of DrawCharB and allows for printing at a
+//user specified (x,y) and a different Character
 //Code Taken from Tutorial08 and modified
-//r0 = x value
-//r1 = y value
-//r2 = colour of text
-//r3 = character to be drawn
-
 .globl Draw_Char
 Draw_Char:
 	push	{r4-r10, lr}
@@ -97,11 +102,11 @@ noPixel$:
 	mov	pc, lr
 
 //Draw_String
-//r0 = x
-//r1 = y
-//r2 = colour
-//r3 = address of string -> .asciz
-
+//Args: R0 = x, R1 = y, R2 = Colour, R3 = address of string
+//Return: None
+//This function takes in the address of a string in .asciz form and will print it out
+//to the screen. It first loads the individual value and will then call the Draw_Char function.
+//The function will loop until the /0 character is encountered.
 .globl Draw_String
 Draw_String:
 	push 	{r4-r10, lr}	//*******do we push before or after .req
@@ -195,9 +200,13 @@ FillScreen:
     mov pc, lr
 
 /////////////////////////////////////////////////////////////////////////////////////
-/* Draw the character 'B' to (0,0)
- */
-//r2 = colour
+
+//DrawCharB
+//Args: R2 = Colour
+//Return: None
+//This function is used for testing
+//Draws the character 'B' to (0,0)
+//Function Taken from Tutorial 8 
 .globl DrawCharB
 DrawCharB:
 	push	{r4-r8, lr}
@@ -251,26 +260,32 @@ noPixel$$:
 	pop		{r4-r8, pc}
 
 ///////////////////////////////////////////////////////////////////////////////////////
+//Draw_Int
+//Args: R0, number to be printed
+//Return: None
+//This function takes in a number to be printed. Subtracts 100 and stores the amount of 
+//times it is subtracted and prints. Then subtracts 10 and stores the amount of times 
+//subtracted and prints. Repeats for 1's.
+//Note* Value cannot be above 300
 .globl Draw_Int
 Draw_Int:
 	push 	{r4-r10, lr}	
 
-	mov r9, r0
-	mov r1, #0
+	mov r9, r0			//stores r0 into r9
+	mov r1, #0			//index of hundred
 
 hundredLoop:
-	cmp r9, #100
-	
-	subge r9, #100
-	addge r1, #1
+	cmp r9, #100			
+	subge r9, #100			//if ge to 100 subtract and loop
+	addge r1, #1			//else fall into 100end
 	bge    hundredLoop
 
 hundredLoopEnd:
-	add r1, #48	
-	ldr	r2, =HundredBuff
+	add r1, #48			//add 48 for ascii
+	ldr	r2, =HundredBuff	//load value
 	str	r1, [r2]
 
-	mov	r0, #150
+	mov	r0, #150		//print out 100's value
 	mov	r1, #100
 	ldr	r2, =0xFF0F
 	ldr	r3, =HundredBuff
@@ -279,17 +294,17 @@ hundredLoopEnd:
 	mov r1, #0
 
 tenLoop:
-	cmp r9, #10
-	subge r9, #10
-	addge r1, #1
+	cmp r9, #10			
+	subge r9, #10			//if ge to 10 subtract and loop
+	addge r1, #1			//else fall into 10end
 	bge    tenLoop
 
 tenLoopEnd:
-	add r1, #48	
-	ldr	r2, =TenBuff
+	add r1, #48			//add 48 for ascii
+	ldr	r2, =TenBuff		//load value
 	str	r1, [r2]
 
-	mov	r0, #160
+	mov	r0, #160		//print out 10's value
 	mov	r1, #100
 	ldr	r2, =0xF000
 	ldr	r3, =TenBuff
@@ -299,16 +314,16 @@ tenLoopEnd:
 
 oneLoop:
 	cmp r9, #1
-	subge r9, #1
-	addge r1, #1
+	subge r9, #1			//if ge to 1 subtract and loop
+	addge r1, #1			//else fall into 1end
 	bge    oneLoop
 
 Draw_Int_Done:
-	add 	r1, #48
-	ldr	r2, =OneBuff
+	add 	r1, #48			//add 48 for ascii
+	ldr	r2, =OneBuff		//load value
 	str	r1, [r2]
 
-	mov	r0, #170
+	mov	r0, #170		//print out 1's value
 	mov	r1, #100
 	ldr	r2, =0x0FFF
 	ldr	r3, =OneBuff
@@ -317,21 +332,31 @@ Draw_Int_Done:
 	pop 	{r4-r10, lr}
 	mov	pc, lr
 
-/////////////////////////////////////////////////////////////////////
 
+//Data
 .section .data
 .align	4
 
 font:
 	.incbin "font.bin"
 
+//Storage for Hundred
 HundredBuff:
 	.word 0
+//Storage for Ten
 TenBuff:
 	.word 0
+//Storage for One
 OneBuff:
 	.word 0
-//
+
+
+
+
+
+
+
+
 //
 
 
