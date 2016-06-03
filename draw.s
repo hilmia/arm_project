@@ -199,6 +199,53 @@ FillScreen:
     pop {r4-r10, lr}
     mov pc, lr
 
+
+//r0 - Contains colour to fill screen with
+.globl FillScreen_M
+FillScreen_M:
+  push {r4-r10, lr}
+
+  colour .req r10
+  row_size .req r6
+  column_size .req r7
+  row_counter	.req	r4
+  column_counter	.req	r5
+
+
+  mov row_size, #130
+  mov column_size, #180
+
+  mov colour, r0
+
+  mov row_counter, #100
+
+  fill_loop_row_M:
+    cmp row_counter, row_size
+    bge fill_done_block
+
+    mov column_counter, #100
+    add row_counter, #1
+
+
+    fill_loop_column_M:
+      cmp column_counter, column_size
+      bge fill_loop_row
+
+      mov r2, colour
+      mov r0, column_counter
+      mov r1, row_counter
+      bl DrawPixel
+
+      add column_counter, #1
+      b fill_loop_column
+
+    .unreq row_size
+    .unreq column_size
+    .unreq row_counter
+    .unreq column_counter
+
+    pop {r4-r10, lr}
+    mov pc, lr
 /////////////////////////////////////////////////////////////////////////////////////
 
 //DrawCharB
