@@ -86,7 +86,45 @@ Screen_Data_Print:
 	pop	{r4-r10, lr}
 	mov	pc, lr
 	
+//Screen_Data_Print_Black
+//Args: None
+//Return: None
+//This function loads and prints out the values of the Fuel/Life and prints them over with black
+//them to the screen
+.globl Screen_Data_Print_Black
+Screen_Data_Print_Black:
+	push	{r4-r10, lr}
 
+//Fuel_Display
+	mov	r0, #100		//Print out Fuel:
+	mov	r1, #100
+	ldr	r2, =0x0000
+	ldr	r3, =Fuel_Display
+	bl	Draw_String
+
+	ldr	r3, =Fuel_Storage	//Print out Fuel Value
+	ldrb	r0, [r3]
+	bl	Draw_Int
+
+
+//Life_Display
+	mov	r0, #100		//Print out Lives:
+	mov	r1, #115
+	ldr	r2, =0x0000
+	ldr	r3, =Life_Display
+	bl	Draw_String
+	
+	mov	r0, #160		//Print out Lives Value
+	mov	r1, #115
+	ldr	r2, =0x0000
+
+	ldr	r3, =Live_Storage
+
+	bl	Draw_String
+
+	pop	{r4-r10, lr}
+	mov	pc, lr
+	
 //Strings and Fuel/ Life Storage
 .section .data
 .align 4
