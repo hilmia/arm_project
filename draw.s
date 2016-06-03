@@ -333,6 +333,81 @@ Draw_Int_Done:
 	mov	pc, lr
 
 
+//Draw_Int_Black
+//Args: R0, number to be printed
+//Return: None
+//This function takes in a number to be printed. Subtracts 100 and stores the amount of 
+//times it is subtracted and prints. Then subtracts 10 and stores the amount of times 
+//subtracted and prints. Repeats for 1's.
+//PRINTS BLACK
+//Note* Value cannot be above 300
+.globl Draw_Int_Black
+Draw_Int_Black:
+	push 	{r4-r10, lr}	
+
+	mov r9, r0			//stores r0 into r9
+	mov r1, #0			//index of hundred
+
+hundredLoop_Black:
+	cmp r9, #100			
+	subge r9, #100			//if ge to 100 subtract and loop
+	addge r1, #1			//else fall into 100end
+	bge    hundredLoop_Black
+
+hundredLoopEnd_Black:
+	add r1, #48			//add 48 for ascii
+	ldr	r2, =HundredBuff	//load value
+	str	r1, [r2]
+
+	mov	r0, #150		//print out 100's value
+	mov	r1, #100
+	ldr	r2, =0x0000
+	ldr	r3, =HundredBuff
+	bl	Draw_String	
+	
+	mov r1, #0
+
+tenLoop_Black:
+	cmp r9, #10			
+	subge r9, #10			//if ge to 10 subtract and loop
+	addge r1, #1			//else fall into 10end
+	bge    tenLoop_Black
+
+tenLoopEnd_Black:
+	add r1, #48			//add 48 for ascii
+	ldr	r2, =TenBuff		//load value
+	str	r1, [r2]
+
+	mov	r0, #160		//print out 10's value
+	mov	r1, #100
+	ldr	r2, =0x0000
+	ldr	r3, =TenBuff
+	bl	Draw_String
+
+	mov r1, #0
+
+oneLoop_Black:
+	cmp r9, #1
+	subge r9, #1			//if ge to 1 subtract and loop
+	addge r1, #1			//else fall into 1end
+	bge    oneLoop
+
+Draw_Int_Done_Black:
+	add 	r1, #48			//add 48 for ascii
+	ldr	r2, =OneBuff		//load value
+	str	r1, [r2]
+
+	mov	r0, #170		//print out 1's value
+	mov	r1, #100
+	ldr	r2, =0x0000
+	ldr	r3, =OneBuff
+	bl	Draw_String	
+
+	pop 	{r4-r10, lr}
+	mov	pc, lr
+
+
+
 //Data
 .section .data
 .align	4

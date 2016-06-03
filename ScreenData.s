@@ -86,6 +86,7 @@ Screen_Data_Print:
 	pop	{r4-r10, lr}
 	mov	pc, lr
 	
+
 //Screen_Data_Print_Black
 //Args: None
 //Return: None
@@ -104,7 +105,7 @@ Screen_Data_Print_Black:
 
 	ldr	r3, =Fuel_Storage	//Print out Fuel Value
 	ldrb	r0, [r3]
-	bl	Draw_Int
+	bl	Draw_Int_Black
 
 
 //Life_Display
