@@ -8,11 +8,12 @@
 .globl randomGen
 randomGen:	
 	push	{r4-r10, lr}
-kylethebum:	
+kylethebum:
+	ldr		r4, = 0x3F003004	//address of CLO
+	ldr		r5, [r4]		//read CLO, y	
 	ldr	 	r4, =0x72E1		//x
-	ldr		r5, =0xFF1F		//y
 	ldr		r6, =0x3		//z
-	ldr		r7, =0xF666		//w
+	lsr		r7, r5, #10		//w
 	mov		r8, r4			//t = x
 	lsl		r9, r8, #11		//t = t xor t << 11
 	eor		r8, r9
