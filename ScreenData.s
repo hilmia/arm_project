@@ -31,14 +31,15 @@ Screen_Data_Init:
 
 //Screen_Data_Change
 //Args: r0 = Data type 0 = Fuel, 1 = Lives
-//Return: None
+//Return: r0 = 1 = Game Over Flag
 //This function takes in the flag r0 to determine if either Fuel or Lives will 
 //be changed. The function loads either the Fuel/Live storage and will change the 
-//value. Then it will store it back.
+//value. Then it will store it back. Returns the r0 flag to tell if game over.
 .globl Screen_Data_Change
 Screen_Data_Change:
 	push	{r4-r10, lr}
 
+	mov		r0, #0			//set back to 0
 	cmp		r0, #0			//r0 = 0, Branch to Fuel Change
 	beq		Change_Fuel
 	
@@ -54,6 +55,7 @@ Change_Fuel:
 	cmp		r4, #0
 	moveq		r0, #0
 	beq		Game_Over
+	moveq		r0, #1
 
 	strb		r4, [r8]		//Store
 
@@ -67,7 +69,8 @@ Change_Life:
 
 	cmp		r4, #0
 	moveq		r0, #1
-	beq		Game_Over	
+	beq		Game_Over
+	moveq		r0, #1	
 
 	strb		r4, [r8]		//Store
 
