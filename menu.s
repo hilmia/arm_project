@@ -367,6 +367,7 @@ Game_Over_Done:
 	ldr	r3, =Game_Over_Message
 	bl	Draw_String
 
+	//Branch to Game_End_Menu
 	pop	{r4-r10, lr}
 	mov	pc, lr
 
@@ -396,6 +397,7 @@ Game_Win:
 	ldr	r3, =Game_Over_Message
 	bl	Draw_String
 
+	//Branch to Game_End_Menu
 	pop	{r4-r10, lr}
 	mov	pc, lr
 
