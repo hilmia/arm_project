@@ -3,13 +3,16 @@
 
 //ScreenData.s
 //Functions:
-//Screen_Data_Change, Screen_Data_Print
+//Screen_Data_Init, Screen_Data_Change, Screen_Data_Add, Screen_Data_Print
 
 
 .section .text
 .align 4
 
-
+//Screen_Data_Init
+//Args: None
+//Return: None
+//This function sets the values for Fuel and Lives to be the default 100 and 3
 .globl Screen_Data_Init
 Screen_Data_Init:
 	push	{r4-r10, lr}
@@ -69,6 +72,37 @@ Change_Life:
 	strb		r4, [r8]		//Store
 
 Screen_Data_Change_Done:
+	pop		{r4-r10, lr}
+	mov		pc, lr
+
+
+//Screen_Data_Add
+//Args: None
+//Return: None
+//This function adds a numerical amount to the fuel storage. This value can be changed
+//and if the fuel is over 100, the value is over written to 100 and stored again.
+.globl Screen_Data_Add
+Screen_Data_Add:
+	push	{r4-r10, lr}
+	
+Add_Fuel:
+	ldr		r8, =Fuel_Storage	//Load Address
+		
+	ldrb		r4, [r8]		//Load Value
+	add		r4, #10			//*****Add Change
+
+	cmp		r4, #100
+	bge		Over_Hundred
+	
+	strb		r4, [r8]		//Store
+
+	b		Screen_Data_Add_Done
+
+Over_Hundred:
+	mov		r4, #100		//if >100 move 100 into fuel
+	strb		r4, [r8]		//Store
+
+Screen_Data_Add_Done:
 	pop		{r4-r10, lr}
 	mov		pc, lr
 

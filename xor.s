@@ -25,68 +25,56 @@ kylethebum:
 	eor		r7, r9
 	eor		r7, r8			//w = w xor t
 hilms:
-	lsl		r2, r2, #4
+	lsl		r2, r2, #4		//r2 = r2*20
 	lsl		r8, r2, #2
 	add		r2, r8, #4
-	
-/*	cmp		r7, 357913941
-	bgt		next1
-	str		r3, [gameArray, r2], #1
+	add		r2, r2, #6		//Offset for grass 
+	lsl		r2, r2, #4		//Multiply by size
 
 next1:	
-	cmp		r7, 715827882
+	cmp		r7, 61000000
 	bgt		next2
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next2:	
-	cmp		r7, 1073741824
+	cmp		r7, 61050000
 	bgt		next3
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next3:	
-	cmp		r7, 141655765
+	cmp		r7, 61200000
 	bgt		next4
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next4:	
-	cmp		r7, 1431655765
+	cmp		r7, 61250000
 	bgt		next5
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next5:	
-	cmp		r7, 1789569706
+	cmp		r7, 61300000
 	bgt		next6
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next6:	
-	cmp		r7, 2147483648
+	cmp		r7, 61350000
 	bgt		next7
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next7:	
-	cmp		r7, 2505397589
+	cmp		r7, 6140000
 	bgt		next8
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next8:	
-	cmp		r7, 2863311530
+	cmp		r7, 61450000
 	bgt		next9
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next9:	
-	cmp		r7, 3221225472
+	cmp		r7, 61550000
 	bgt		next10
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next11:	
-	cmp		r7, 3579139413
+	cmp		r7, 61600000
 	bgt		next12
-	str		r3, [gameArray, r2], #1
-	
+	str		r3, [gameArray, r2]	
 next12:	
-	cmp		r7, 3937053354
+	cmp		r7, 61650000
 	bgt		done
-	str		r3, [gameArray, r2], #1   */
+	str		r3, [gameArray, r2] */
 	
 done:
 	pop		{r4-r10, lr}
