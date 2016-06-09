@@ -1,33 +1,5 @@
 .section .text
 
-.globl PixelLoopManager
-PixelLoopManager:
-  push {r4 - r6, lr}
-  ldr r0, =0xFFFF
-  bl FillScreen
-  ldr r4, =gameArrayEnd
-
-  mov r5, #0
-  a_loop:
-  sub r4, #80
-  cmp r5, #400
-  beq end_game
-
-  mov r0, r4
-  bl ArrayToScreen
-
-
-  add r5, #1
-  b a_loop
-
-  end_game:
-  ldr r0, =0x0
-  bl FillScreen
-
-
-
-  pop {r4 - r6, lr}
-  mov pc, lr
 
 
 //r0 - start x
@@ -97,6 +69,7 @@ DrawBlock:
 
 
 //r0 - address of array
+.globl ArrayToScreen
 ArrayToScreen:
   push  {r3 - r10, lr}
 
@@ -128,6 +101,23 @@ ArrayToScreen:
 
   array_row_loop:
 
+  //grass = 0
+  //LeftWall = 1
+  //RightWall = 2
+  //LeftRoad = 3
+  //RightRoad = 4
+  //Road = 5
+  //Road with solid white on left = 6
+  //Road with solid white on right = 7
+  //Road with dotted white on left = 8
+  //Road with dotted white on right = 9
+  //Enemy = 10
+  //Fuel = 11
+  //Red Car = 12
+  //Pond = 13
+  //Tree = 14
+  //Blue Car = 15
+  //Fireball = 16
     cmp row_counter, #80
     addeq column_counter, #1
     beq array_column_loop
@@ -140,6 +130,14 @@ ArrayToScreen:
 
     cmp current_element, #14
     ldreq current_picture, =fourteen
+    beq print_element
+
+    cmp current_element, #1
+    ldreq current_picture, =one
+    beq print_element
+
+    cmp current_element, #2
+    ldreq current_picture, =two
     beq print_element
 
     cmp current_element, #5

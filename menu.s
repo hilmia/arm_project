@@ -1,14 +1,16 @@
-//CPSC 359 - Assignment 3 - RoadFighter
+//CPSC 359 - Assignment 3 - RoadFighter - menu.s
 //Kyle Ostrander 10128524, Carlin Liu 10123584, Hilmi Abou-Saleh 10125373
  
 //Menu.s
 //Functions:
 //Print_Menu_Start, Print_Menu_Quit, Print_Menu_Black_Start, Print_Menu_Black_Quit
-//Print_Menu_Starting_Game, Print_Menu_Quitting_Game, Menu_Controller, 
+//Print_Menu_Starting_Game, Print_Menu_Quitting_Game, Menu_Controller
+//Game_Over, Game_Win
 
 
 .section .text
 .align 4
+
 
 //Print_Menu_Start
 //Args: None
@@ -168,9 +170,10 @@ Print_Menu_Black_Quit:
 Print_Menu_Starting_Game:
 	push	{r4-r10, lr}
 
-	ldr	r2, =0x0F00	
+	ldr	r2, =0x0F00	//Test B
 	bl	DrawCharB
 
+	//Starting Game
 	mov	r0, #500
 	mov	r1, #600
 	ldr	r2, =0x0F00
@@ -179,8 +182,6 @@ Print_Menu_Starting_Game:
 
 	ldr	r0, =0x0000
 	bl	FillScreen
-
-	bl	PixelLoopManager
 
 	pop	{r4-r10, lr}
 	mov	pc, lr
@@ -193,9 +194,10 @@ Print_Menu_Starting_Game:
 Print_Menu_Quitting_Game:
 	push	{r4-r10, lr}
 
-	ldr	r2, =0x0F00	
+	ldr	r2, =0x0F00	//Test B
 	bl	DrawCharB
 
+	//Quitting Game
 	mov	r0, #500
 	mov	r1, #600
 	ldr	r2, =0xFFFF
@@ -301,50 +303,141 @@ Menu_Controller_Done:
 	mov	pc, lr
 
 
+
+//Game_Over
+//Args: r0 = Fuel/Lives Flag, 0=Fuel/ 1=Lives
+//Return: None
+//This function prints out Game over no lives/no fuel depending on the r0 flag being set.
+//Also prints instructions to return
+.globl Game_Over
+Game_Over:
+	push	{r4-r10, lr}
+
+	cmp	r0, #0				//Check r0 Flag and Branch
+	beq	Game_Over_No_Fuel
+	
+	cmp	r0, #1
+	beq	Game_Over_No_Lives
+
+Game_Over_No_Fuel:
+	ldr	r0, =0x0000
+	bl	FillScreen
+	
+	//Game Over
+	mov	r0, #300
+	mov	r1, #300
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Over_String
+	bl	Draw_String
+
+	//No Fuel
+	mov	r0, #300
+	ldr	r1, =315
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Over_Fuel_Message
+	bl	Draw_String
+	
+	b	Game_Over_Done
+
+Game_Over_No_Lives:
+	ldr	r0, =0x0000
+	bl	FillScreen
+
+	//Game Over
+	mov	r0, #300
+	mov	r1, #300
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Over_String
+	bl	Draw_String
+
+	//No Lives
+	mov	r0, #300
+	ldr	r1, =315
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Over_Lives_Message
+	bl	Draw_String
+	
+	b	Game_Over_Done
+
+Game_Over_Done:
+	//Instructions
+	mov	r0, #300
+	ldr	r1, =330
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Over_Message
+	bl	Draw_String
+
+	pop	{r4-r10, lr}
+	mov	pc, lr
+
+
+//Game_Win
+//Args: None
+//Return: None
+//This function prints Game Winning message and instructions to return
+.globl Game_Win
+Game_Win:
+	push	{r4-r10, lr}
+
+	ldr	r0, =0x0000
+	bl	FillScreen
+
+	//Game Win
+	mov	r0, #300
+	mov	r1, #300
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Win_String
+	bl	Draw_String
+
+	//Instructions
+	mov	r0, #300
+	ldr	r1, =315
+	ldr	r2, =0xFFFF
+	ldr	r3, =Game_Over_Message
+	bl	Draw_String
+
+	pop	{r4-r10, lr}
+	mov	pc, lr
+
+
+//Strings
 .section .data
 .align 4
 
-.globl Game_Name
 Game_Name:
 	.asciz	"RoadFighter"
-
-
-.globl Creator_Names
 Creator_Names:
 	.asciz	"A Video Game by Kyle Ostrander, Carlin Liu & Hilms Abou-Saleh"
-
-.globl Main_Menu
 Main_Menu:
 	.asciz	"MAIN MENU"
-
-
-.globl Start_Game
 Start_Game:
 	.asciz	"START"
-
-
-.globl Quit_Game
 Quit_Game:
 	.asciz	"QUIT"
 
-.globl Start_Game_Selected
 Start_Game_Selected:
 	.asciz	"<START>"
-
-
-.globl Quit_Game_Selected
 Quit_Game_Selected:
 	.asciz	"<QUIT>"
 
-.globl Starting_Game
+
 Starting_Game:
 	.asciz	"Initializing game"
-
-.globl Quitting_Game
 Quitting_Game:
 	.asciz	"Exiting program..."
 
 
+Game_Over_String:
+	.asciz	"Game Over!"
+Game_Over_Message:
+	.asciz	"Press <Start> to play again, <Select> to return to main menu"
+Game_Over_Fuel_Message:
+	.asciz	"You Ran Out of Fuel"
+Game_Over_Lives_Message:
+	.asciz	"You Ran Out of Lives"
+
+Game_Win_String:
+	.asciz	"You Win!"
 
 
 
@@ -353,6 +446,11 @@ Quitting_Game:
 
 
 
+
+
+
+
+//
 
 
 
