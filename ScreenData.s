@@ -67,7 +67,7 @@ Change_Life:
 	ldrb		r4, [r8]		//Load Value
 	sub		r4, #1			//*****Minus Change
 
-	cmp		r4, #0
+	cmp		r4, #48
 	moveq		r0, #1
 	beq		Game_Over
 	moveq		r0, #1	
