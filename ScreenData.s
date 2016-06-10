@@ -39,7 +39,7 @@ Screen_Data_Init:
 Screen_Data_Change:
 	push	{r4-r10, lr}
 
-	//mov		r0, #0			//set back to 0
+	mov		r7, #0			//set back to 0
 	cmp		r0, #0			//r0 = 0, Branch to Fuel Change
 	beq		Change_Fuel
 
@@ -54,8 +54,8 @@ Change_Fuel:
 
 	cmp		r4, #0
 	moveq		r0, #0
-	beq		Game_Over
-	//moveq		r0, #1
+	bleq		Game_Over
+	moveq		r7, #1
 
 	strb		r4, [r8]		//Store
 
@@ -69,12 +69,13 @@ Change_Life:
 
 	cmp		r4, #48
 	moveq		r0, #1
-	beq		Game_Over
-	//moveq		r0, #1
+	bleq		Game_Over
+	moveq		r7, #1
 
 	strb		r4, [r8]		//Store
 
 Screen_Data_Change_Done:
+	mov 	r0, r7
 	pop		{r4-r10, lr}
 	mov		pc, lr
 

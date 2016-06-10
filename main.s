@@ -48,6 +48,16 @@ main:
 haltLoop$:
 	b	haltLoop$
 
+
+End_Game_Loop:
+  push {r4, lr}
+  mov r0, #0
+
+  bleq Game_End_Menu
+  pop {r4, lr}
+  mov pc, lr
+
+
 .globl Game_Loop
 Game_Loop:
   push {r4 - r10, lr}
@@ -67,10 +77,34 @@ Game_Loop:
   mov counter, #0
   mov player, #11
 
-  //Insert Random
-
   start_screen_init:
   bl Screen_Data_Init
+
+
+  //Add Enemies and Fuel Trucks
+  mov random_row_counter, #0
+
+  addEnemy:
+    cmp random_row_counter, #200
+    beq addFuel_Init
+    mov r0, random_row_counter
+    mov r1, #10
+    bl  randomGen
+    add random_row_counter, #10
+    b addEnemy
+
+
+  addFuel_Init:
+    mov random_row_counter, #0
+  addFuel:
+    cmp random_row_counter, #200
+    beq gameState
+    mov r0, random_row_counter
+    mov r1, #11
+    bl randomGen
+    add random_row_counter, #20
+    b addFuel
+
 
 
   //Start Loop
@@ -81,7 +115,7 @@ Game_Loop:
 
     sub temp_state, #80
 
-    cmp counter, #400
+    cmp counter, #200
     beq end_game
 
     mov r0, #12
@@ -102,65 +136,90 @@ Game_Loop:
     	ldr     r1, =0xFFFF
     	cmp     r0, r1
       beq read_loop
-      //Controller Input:
+
       //dpadleft & A
         ldr	r1, =0xFEBF
         cmp	r0, r1
-        moveq r0, #5
-        streq r0, [temp_state, #84]
-        subeq temp_state, #4
-        subeq player, #1
-        beq update_game
-    	//dpadleft
+        beq g_dpadleft
+
        	ldr	r1, =0xFFBF
       	cmp	r0, r1
-        moveq r0, #5
-        streq r0, [temp_state, #84]
-        subeq temp_state, #4
-        subeq player, #1
-        beq update_game
-        //Check for Collision
-        //Update Fuel
-        //Update Lives
-        //Update Position if game state not finished
-        //beq	dpadup_Menu
-      //dpadright & A
+        bne g_dpadrightA
+
+      g_dpadleft:
+
+        //Check Fuel or Enemy
+        ldr r2, [temp_state, #-84]
+        
+        cmp r2, #10
+
+        moveq r0, #1
+        bleq Screen_Data_Change
+
+        cmp r2, #11
+        bleq Screen_Data_Add
+
+        mov r0, #5
+        str r0, [temp_state, #84]
+        sub temp_state, #4
+        sub player, #1
+
+        b update_game
+
+
+      g_dpadrightA:
       	ldr	r1, =0xFE7F
         cmp	r0, r1
-        moveq r0, #5
-        streq r0, [temp_state, #76]
-        addeq temp_state, #4
-        addeq player, #1
-        beq update_game
+        beq g_dpadright
 
-
-    	//dpadright:
+        //dpadright with no A
       	ldr	r1, =0xFF7F
         cmp	r0, r1
-        moveq r0, #5
-        streq r0, [temp_state, #76]
-        addeq temp_state, #4
-        addeq player, #1
-        beq update_game
-        //Check for Collision
-        //Update Lives
-      	//beq	dpaddown_Menu
+        bne g_a_button
+      g_dpadright:
+        //Check Fuel or Enemy
+        ldr r2, [temp_state, #-76]
 
-    	//A_button:
+        cmp r2, #10
+        moveq r0, #1
+        bleq Screen_Data_Change
+
+        cmp r2, #11
+        bleq Screen_Data_Add
+
+        mov r0, #5
+        str r0, [temp_state, #76]
+        add temp_state, #4
+        add player, #1
+
+        b update_game
+
+    	g_a_button:
       	ldr	r1, =0xFEFF
       	cmp	r0, r1
-        moveq r0, #5
-        streq r0, [temp_state, #80]
-        //Update Fuel
-        //Check for Collision
-      	beq	update_game
+        bne g_select_button
 
-      //Select_button:
+        //Check Fuel or Enemy
+        ldr r2, [temp_state, #-80]
+
+        cmp r2, #10
+        moveq r0, #1
+        bleq Screen_Data_Change
+
+        cmp r2, #11
+        bleq Screen_Data_Add
+
+        mov r0, #5
+        str r0, [temp_state, #80]
+
+        b update_game
+
+      g_select_button:
         ldr  r1, =0xFFFB
         cmp  r0, r1
         beq  _start
 
-      //Start_button:
+      g_start_button:
         ldr r1, =0xFFF7
         cmp r0, r1
         moveq r0, #5
@@ -168,7 +227,6 @@ Game_Loop:
 
         ldreq r0, =0x0
         bleq FillScreen
-
         beq Game_Loop
 
         b read_loop
@@ -178,7 +236,7 @@ Game_Loop:
       cmp player, #17
       movge r0, #1
       blge  Screen_Data_Change
-
+      mov r10, r0
       movge r0, #12
       subge temp_state, #24
       strge r0, [temp_state]
@@ -193,7 +251,7 @@ Game_Loop:
 
       mov r0, #1
       bl  Screen_Data_Change
-
+      mov r10, r0
       mov r0, #12
       add temp_state, #28
       str r0, [temp_state]
@@ -203,16 +261,21 @@ Game_Loop:
         mov player, #11
 
       finish_update:
+        cmp r10, #1
+        bleq End_Game_Loop
+
         ldr r0, =0x0
         bl FillScreen_M
         mov r0, #0
         bl Screen_Data_Change
         add counter, #1
+
         b gameState
+
 
   end_game:
     ldr r0, =0x0
-    bl FillScreen
+    //bl FillScreen
     .unreq state
     .unreq counter
 
@@ -221,6 +284,10 @@ Game_Loop:
     .unreq random_row_counter
     pop {r4 - r10, lr}
     mov pc, lr
+
+
+
+
 
 .section .data
 

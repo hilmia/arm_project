@@ -164,6 +164,13 @@ ArrayToScreen:
     ldreq current_picture, =twelve
     beq print_element
 
+    cmp current_element, #10
+    ldreq current_picture, =ten
+    beq print_element
+
+    cmp current_element, #11
+    ldreq current_picture, =eleven
+    beq print_element
 
     cmp current_element, #0
     ldr current_picture, =zero
