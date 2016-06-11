@@ -185,6 +185,8 @@ Game_Loop:
         bleq Screen_Data_Change
         cmp r2, #11
         bleq Screen_Data_Add
+        beq update_game_for_enemy_hit
+
 
         mov r0, #5
         str r0, [temp_state, #84]
@@ -210,6 +212,8 @@ Game_Loop:
         cmp r2, #10
         moveq r0, #1
         bleq Screen_Data_Change
+        beq update_game_for_enemy_hit
+
         cmp r2, #11
         bleq Screen_Data_Add
 
@@ -228,9 +232,11 @@ Game_Loop:
         //Check Fuel or Enemy
         ldr r2, [temp_state, #-80]
 
-        cmp r2, #10
+        cmp r2, #10 //Enemy Hit
         moveq r0, #1
         bleq Screen_Data_Change
+        beq update_game_for_enemy_hit
+
         cmp r2, #11
         bleq Screen_Data_Add
 
@@ -255,6 +261,14 @@ Game_Loop:
         bl Reset_Game
 
         b read_loop
+
+    update_game_for_enemy_hit:
+      rsb r9, player, #11
+      mov r0, #12
+      lsl r9, #2 //r9 * 4
+      sub temp_state, r9
+      str r0, [temp_state]
+      b update_player
 
     update_game:
       //Check collision with Right Wall
