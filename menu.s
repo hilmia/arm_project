@@ -417,21 +417,15 @@ Game_End_Wait:
 	//no input
 	ldr     r1, =0xFFFF
 	cmp     r0, r1
-	beq     Menu_Wait
+	beq     Game_End_Wait
 
-	//select
- 	ldr	r1, =0xFFFB
-	cmp	r0, r1
-	bleq Restart_Game
-	beq Game_End_Done
-
-	//start
-	ldr	r1, =0xFFF7
+	//Start Button
+ 	ldr	r1, =0xFFF7
 	cmp	r0, r1
 	bleq Reset_Game
 	beq Game_End_Done
 
-	b	Game_End_Wait
+	bl Restart_Game
 
 
 Game_End_Done:
@@ -445,7 +439,7 @@ Game_End_Done:
 Game_Name:
 	.asciz	"RoadFighter"
 Creator_Names:
-	.asciz	"A Video Game by Kyle Ostrander, Carlin Liu & Hilms Abou-Saleh"
+	.asciz	"A Video Game by Kyle Ostrander, Carlin Liu & Hilmi Abou-Saleh"
 Main_Menu:
 	.asciz	"MAIN MENU"
 Start_Game:
@@ -468,7 +462,7 @@ Quitting_Game:
 Game_Over_String:
 	.asciz	"Game Over!"
 Game_Over_Message:
-	.asciz	"Press <Start> to play again, <Select> to return to main menu"
+	.asciz	"Press <Start> to play again, press any button to return to main menu"
 Game_Over_Fuel_Message:
 	.asciz	"You Ran Out of Fuel"
 Game_Over_Lives_Message:

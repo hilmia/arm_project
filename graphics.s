@@ -155,6 +155,11 @@ array_column_loop:
     ldreq current_picture, =eleven
     beq print_element
 
+
+    cmp current_element, #17
+    ldreq current_picture, =finish
+    beq print_element
+
     cmp current_element, #0
     ldr current_picture, =zero
 
@@ -169,12 +174,12 @@ array_column_loop:
     //cmp column_counter, #
     //bgt do_element_print
 
-    //mov r0, current_element
-    //mov r1, array
-    //bl checkPicture
+    mov r0, current_element
+    mov r1, array
+    bl checkPicture
 
-    //cmp r0, #1
-    //beq done_print_element
+    cmp r0, #1
+    beq done_print_element
 
   do_element_print:
     mov r0, y

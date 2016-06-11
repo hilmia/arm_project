@@ -71,6 +71,8 @@ Reset_Array:
 Reset_Game:
   push {lr}
   bl Reset_Array
+  mov r0, #0
+  bl FillScreen
   bl Game_Loop
   pop {lr}
   mov pc, lr
@@ -114,11 +116,11 @@ Game_Loop:
 
   addEnemy:
     cmp random_row_counter, #200
-    beq addFuel_Init
+    bge addFuel_Init
     mov r0, random_row_counter
     mov r1, #10
     bl  randomGen
-    add random_row_counter, #10
+    add random_row_counter, #5
     b addEnemy
 
 
@@ -126,11 +128,11 @@ Game_Loop:
     mov random_row_counter, #0
   addFuel:
     cmp random_row_counter, #200
-    beq gameState
+    bge gameState
     mov r0, random_row_counter
     mov r1, #11
     bl randomGen
-    add random_row_counter, #20
+    add random_row_counter, #15
     b addFuel
 
 
@@ -180,12 +182,11 @@ Game_Loop:
         ldr r2, [temp_state, #-84]
 
         cmp r2, #10
+        beq update_game_for_enemy_hit
 
-        moveq r0, #1
-        bleq Screen_Data_Change
+
         cmp r2, #11
         bleq Screen_Data_Add
-        beq update_game_for_enemy_hit
 
 
         mov r0, #5
@@ -210,8 +211,6 @@ Game_Loop:
         ldr r2, [temp_state, #-76]
 
         cmp r2, #10
-        moveq r0, #1
-        bleq Screen_Data_Change
         beq update_game_for_enemy_hit
 
         cmp r2, #11
@@ -233,8 +232,6 @@ Game_Loop:
         ldr r2, [temp_state, #-80]
 
         cmp r2, #10 //Enemy Hit
-        moveq r0, #1
-        bleq Screen_Data_Change
         beq update_game_for_enemy_hit
 
         cmp r2, #11
@@ -258,16 +255,24 @@ Game_Loop:
 
         ldreq r0, =0x0
         bleq FillScreen
-        bl Reset_Game
+        bleq Reset_Game
 
         b read_loop
 
     update_game_for_enemy_hit:
+      mov r0, #1
+      bl Screen_Data_Change
+
+      mov r0, #0
+      mov r1, #10
+      bl Screen_Data_Change
+
       rsb r9, player, #11
       mov r0, #12
       lsl r9, #2 //r9 * 4
-      sub temp_state, r9
+      add temp_state, r9
       str r0, [temp_state]
+
       b update_player
 
     update_game:
@@ -275,6 +280,9 @@ Game_Loop:
       cmp player, #17
       movge r0, #1
       blge  Screen_Data_Change
+      mov r0, #0
+      mov r1, #10
+      blge Screen_Data_Change
       movge r0, #12
       subge temp_state, #24
       strge r0, [temp_state]
@@ -288,6 +296,9 @@ Game_Loop:
 
       mov r0, #1
       bl  Screen_Data_Change
+      mov r0, #0
+      mov r1, #10
+      bl Screen_Data_Change
       mov r0, #12
       add temp_state, #28
       str r0, [temp_state]
@@ -301,6 +312,7 @@ Game_Loop:
         ldr r0, =0x0
         bl FillScreen_M
         mov r0, #0
+        mov r1, #1
         bl Screen_Data_Change
         add counter, #1
 
@@ -308,8 +320,9 @@ Game_Loop:
 
 
   end_game:
-    ldr r0, =0x0
-    //bl FillScreen
+    bl Game_Win
+    bl Game_End_Menu
+
     .unreq state
     .unreq counter
 

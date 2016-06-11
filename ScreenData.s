@@ -31,6 +31,7 @@ Screen_Data_Init:
 
 //Screen_Data_Change
 //Args: r0 = Data type 0 = Fuel, 1 = Lives
+//			r1 = Minus Change
 //Return: r0 = 1 = Game Over Flag
 //This function takes in the flag r0 to determine if either Fuel or Lives will
 //be changed. The function loads either the Fuel/Live storage and will change the
@@ -50,7 +51,7 @@ Change_Fuel:
 	ldr		r8, =Fuel_Storage	//Load Address
 
 	ldrb		r4, [r8]		//Load Value
-	sub		r4, #1			//*****Minus Change
+	sub		r4, r1			//*****Minus Change
 
 	cmp		r4, #0
 	moveq		r0, #0

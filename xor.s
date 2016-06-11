@@ -105,7 +105,7 @@ next9:
 	bgt		next10
 	ldr game_Array, =gameArray
 	add r0, #32
-	str		r3, [game_Array, r0]
+	str		r1, [game_Array, r0]
 	b	done
 next10:
 	bgt		next11
