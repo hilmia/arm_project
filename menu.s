@@ -1,6 +1,6 @@
 //CPSC 359 - Assignment 3 - RoadFighter - menu.s
 //Kyle Ostrander 10128524, Carlin Liu 10123584, Hilmi Abou-Saleh 10125373
- 
+
 //Menu.s
 //Functions:
 //Print_Menu_Start, Print_Menu_Quit, Print_Menu_Black_Start, Print_Menu_Black_Quit
@@ -203,7 +203,7 @@ Print_Menu_Quitting_Game:
 	ldr	r2, =0xFFFF
 	ldr	r3, =Quitting_Game
 	bl	Draw_String
-	
+
 	ldr	r0, =0x0000
 	bl	FillScreen
 
@@ -214,7 +214,7 @@ Print_Menu_Quitting_Game:
 //Menu_Controller
 //Args: r4 = start/quit flag 0 = START, 1 = QUIT
 //Return: r1 = start/quit return flag 0 = START, 1 = QUIT
-//This function determines which button is pressed on the main menu screen. 
+//This function determines which button is pressed on the main menu screen.
 //The function runs on a loop waiting on input. When input is entered, it will
 //be compared to up,down etc. Based on the flag it will determine what to print
 //to the screen.
@@ -227,15 +227,15 @@ Menu_Wait:
 	bl	Read_Data			//read in data
 
 	//no input
-	ldr     r1, =0xFFFF		
+	ldr     r1, =0xFFFF
     	cmp     r0, r1
     	beq     Menu_Wait
 
 	//dpadup
-   	ldr	r1, =0xFFEF		
+   	ldr	r1, =0xFFEF
     	cmp	r0, r1
 	beq	dpadup_Menu
-	
+
 	//dpaddown_button:
 	ldr	r1, =0xFFDF
 	cmp	r0, r1
@@ -260,12 +260,12 @@ dpadup_Menu:
 
 	cmp	r4, #1				//if 1, print <start>
 	bleq	Print_Menu_Start
-	
+
 	moveq	r4, #0				//set flag to 0
 	b	Menu_Wait
 
 dpaddown_Menu:
-	ldr	r2, =0xF0F0			//draw test B	
+	ldr	r2, =0xF0F0			//draw test B
 	bl	DrawCharB
 
 	cmp	r4, #1				//Check if flag 1
@@ -275,13 +275,13 @@ dpaddown_Menu:
 	bleq	Print_Menu_Black_Start
 
 	cmp	r4, #0				//if 0, print <quit>
-	bleq	Print_Menu_Quit	
+	bleq	Print_Menu_Quit
 
 	moveq	r4, #1				//set flag to 0
 	b	Menu_Wait
 
-A_Menu:	
-	ldr	r2, =0xFFFF			//draw test B	
+A_Menu:
+	ldr	r2, =0xFFFF			//draw test B
 	bl	DrawCharB
 
 	bl	Print_Menu_Black_Start		//set everything to black
@@ -296,7 +296,7 @@ A_Menu:
 	moveq	r1, #1
 
 	b	Menu_Controller_Done
-	
+
 
 Menu_Controller_Done:
 	pop	{r4-r10, lr}
@@ -315,14 +315,14 @@ Game_Over:
 
 	cmp	r0, #0				//Check r0 Flag and Branch
 	beq	Game_Over_No_Fuel
-	
+
 	cmp	r0, #1
 	beq	Game_Over_No_Lives
 
 Game_Over_No_Fuel:
 	ldr	r0, =0x0000
 	bl	FillScreen
-	
+
 	//Game Over
 	mov	r0, #300
 	mov	r1, #300
@@ -336,7 +336,7 @@ Game_Over_No_Fuel:
 	ldr	r2, =0xFFFF
 	ldr	r3, =Game_Over_Fuel_Message
 	bl	Draw_String
-	
+
 	b	Game_Over_Done
 
 Game_Over_No_Lives:
@@ -356,7 +356,7 @@ Game_Over_No_Lives:
 	ldr	r2, =0xFFFF
 	ldr	r3, =Game_Over_Lives_Message
 	bl	Draw_String
-	
+
 	b	Game_Over_Done
 
 Game_Over_Done:
@@ -366,6 +366,8 @@ Game_Over_Done:
 	ldr	r2, =0xFFFF
 	ldr	r3, =Game_Over_Message
 	bl	Draw_String
+
+	bl Game_End_Menu
 
 	//Branch to Game_End_Menu
 	pop	{r4-r10, lr}
@@ -413,29 +415,24 @@ Game_End_Wait:
 	bl	Read_Data			//read in data
 
 	//no input
-	ldr     r1, =0xFFFF		
-    	cmp     r0, r1
-    	beq     Menu_Wait
+	ldr     r1, =0xFFFF
+	cmp     r0, r1
+	beq     Menu_Wait
 
 	//select
-   	ldr	r1, =0xFFFB	
-    	cmp	r0, r1
-	beq	Game_End_Select
-	
+ 	ldr	r1, =0xFFFB
+	cmp	r0, r1
+	bleq Restart_Game
+	beq Game_End_Done
+
 	//start
 	ldr	r1, =0xFFF7
 	cmp	r0, r1
-	beq	Game_End_Start
+	bleq Reset_Game
+	beq Game_End_Done
 
 	b	Game_End_Wait
 
-Game_End_Select:
-	//branch to _start
-	b	Game_End_Done
-
-Game_End_Start:
-	//reinitialize game
-	b	Game_End_Done
 
 Game_End_Done:
 	pop	{r4-r10, lr}
@@ -492,8 +489,3 @@ Game_Win_String:
 
 
 //
-
-
-
-
-

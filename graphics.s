@@ -89,9 +89,9 @@ ArrayToScreen:
   mov x, #32
   mov y, #0
   mov column_counter, #0
-  array_column_loop:
 
-  //ldr r3, =0x7D00
+array_column_loop:
+
   cmp column_counter, #20
   beq done_array
 
@@ -101,23 +101,6 @@ ArrayToScreen:
 
   array_row_loop:
 
-  //grass = 0
-  //LeftWall = 1
-  //RightWall = 2
-  //LeftRoad = 3
-  //RightRoad = 4
-  //Road = 5
-  //Road with solid white on left = 6
-  //Road with solid white on right = 7
-  //Road with dotted white on left = 8
-  //Road with dotted white on right = 9
-  //Enemy = 10
-  //Fuel = 11
-  //Red Car = 12
-  //Pond = 13
-  //Tree = 14
-  //Blue Car = 15
-  //Fireball = 16
     cmp row_counter, #80
     addeq column_counter, #1
     beq array_column_loop
@@ -174,15 +157,32 @@ ArrayToScreen:
 
     cmp current_element, #0
     ldr current_picture, =zero
-    //beq print_element
-  //Insert Other Elements
+
+
+
+  //This section is where the optimizations are going to lie.
+  //We need to check if block is the same and reprint.
 
   print_element:
+
+    //First Time Program Runs
+    //cmp column_counter, #
+    //bgt do_element_print
+
+    //mov r0, current_element
+    //mov r1, array
+    //bl checkPicture
+
+    //cmp r0, #1
+    //beq done_print_element
+
+  do_element_print:
     mov r0, y
     mov r1, x
     mov r2, current_picture
     bl DrawBlock
 
+  done_print_element:
     add y, #32
     add counter, #4
     add row_counter, #4
@@ -202,6 +202,16 @@ ArrayToScreen:
     pop   {r3 - r10, lr}
     mov   pc, lr
 
+checkPicture:
+  push {r4 - r10, lr}
+  mov r4, r0
+  mov r5, r1
+  ldr r6, [r5, #-80]
+  cmp r4, r6
+  moveq r0, #1
+  movne r0, #0
+  pop {r4 - r10, lr}
+  mov pc, lr
 
 //r0 - Contains colour to fill screen with
 FillScreen:

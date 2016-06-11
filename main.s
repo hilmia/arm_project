@@ -29,33 +29,61 @@ main:
 	bl		Menu_Controller
 	cmp		r1, #0
   bleq Game_Loop
-	//cmp		r1, #1
-	//bleq		haltLoop$
-
-
-	//bl		mainSNES
-
-	//Quit game
-	//Initialize game
-	//Play Game
-	///In game menu
-	///Drive Car
-	///Modify lives
-	///Car death
-	///Modify fuel
-	///End game
 
 haltLoop$:
 	b	haltLoop$
 
 
-End_Game_Loop:
-  push {r4, lr}
-  mov r0, #0
+//Moves Default array elements to GameArray
+Reset_Array:
+  push {r4 - r10, lr}
 
-  bleq Game_End_Menu
-  pop {r4, lr}
+  element       .req r4
+  defaultArray  .req r5
+  changedArray  .req r6
+  counter       .req r7
+
+  ldr changedArray, =gameArray
+  ldr defaultArray, =gameArray_default
+
+  mov counter, #0
+
+  reset_array_loop:
+  ldr r8, =16000
+  cmp counter, r8
+  beq done_reset
+
+  ldr element, [defaultArray, counter]
+  str element, [changedArray, counter]
+
+  add counter, #4
+  b reset_array_loop
+
+  done_reset:
+  .unreq element
+  .unreq defaultArray
+  .unreq changedArray
+  .unreq counter
+  pop {r4 - r10, lr}
   mov pc, lr
+
+.globl Reset_Game
+Reset_Game:
+  push {lr}
+  bl Reset_Array
+  bl Game_Loop
+  pop {lr}
+  mov pc, lr
+
+
+.globl Restart_Game
+Restart_Game:
+  push {lr}
+  bl Reset_Array
+  bl main
+  pop {lr}
+  mov pc, lr
+
 
 
 .globl Game_Loop
@@ -150,12 +178,11 @@ Game_Loop:
 
         //Check Fuel or Enemy
         ldr r2, [temp_state, #-84]
-        
+
         cmp r2, #10
 
         moveq r0, #1
         bleq Screen_Data_Change
-
         cmp r2, #11
         bleq Screen_Data_Add
 
@@ -183,7 +210,6 @@ Game_Loop:
         cmp r2, #10
         moveq r0, #1
         bleq Screen_Data_Change
-
         cmp r2, #11
         bleq Screen_Data_Add
 
@@ -205,7 +231,6 @@ Game_Loop:
         cmp r2, #10
         moveq r0, #1
         bleq Screen_Data_Change
-
         cmp r2, #11
         bleq Screen_Data_Add
 
@@ -217,7 +242,7 @@ Game_Loop:
       g_select_button:
         ldr  r1, =0xFFFB
         cmp  r0, r1
-        beq  _start
+        beq  Restart_Game
 
       g_start_button:
         ldr r1, =0xFFF7
@@ -227,7 +252,7 @@ Game_Loop:
 
         ldreq r0, =0x0
         bleq FillScreen
-        beq Game_Loop
+        bl Reset_Game
 
         b read_loop
 
@@ -236,7 +261,6 @@ Game_Loop:
       cmp player, #17
       movge r0, #1
       blge  Screen_Data_Change
-      mov r10, r0
       movge r0, #12
       subge temp_state, #24
       strge r0, [temp_state]
@@ -244,14 +268,12 @@ Game_Loop:
       bge update_player
 
       //Check collision with Left Wall
-      break:
       cmp player, #4
       //No collision with left or right wall
       bgt finish_update
 
       mov r0, #1
       bl  Screen_Data_Change
-      mov r10, r0
       mov r0, #12
       add temp_state, #28
       str r0, [temp_state]
@@ -261,8 +283,6 @@ Game_Loop:
         mov player, #11
 
       finish_update:
-        cmp r10, #1
-        bleq End_Game_Loop
 
         ldr r0, =0x0
         bl FillScreen_M
