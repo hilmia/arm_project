@@ -1,7 +1,16 @@
-//Randomly generate locations for fuel and cars
+//CPSC 359 - Assignment 3 - RoadFighter - xor.s
+//Kyle Ostrander 10128524, Carlin Liu 10123584, Hilmi Abou-Saleh 10125373
+
+//xor.s
+//Functions:
+//randomGen
 //References: https://en.wikipedia.org/wiki/Xorshift
-//Pass row into r0
-//Pass in 11 or 15 into r1
+ 
+//Randomly generate locations for fuel and cars using an xor shift random number generator
+
+//randomGen
+//Args: r0 (row), r1 (10 or 11 to indicated fuel of enemy car)
+//Returns: nothing, changes game array in the function
 .section .text
 .align 4
 
@@ -10,6 +19,7 @@ randomGen:
 	push	{r4-r10, lr}
 	game_Array .req r10
 	ldr game_Array, =gameArray
+	//Initialize constants for xor shift algorithm
 
 	mov r3, r0
 	mov r0, #4000
@@ -25,6 +35,7 @@ randomGen:
 	mov		r8, r4			//t = x
 	lsl		r9, r8, #11		//t = t xor t << 11
 	eor		r8, r9
+	//Generate random number
 
 	mov		r4, r5			//x = y
 	mov		r5, r6			//y = z
@@ -33,10 +44,10 @@ randomGen:
 	eor		r7, r9
 	eor		r7, r8			//w = w xor t
 	//mov 	r1, #12 % 10
-hilms:
 
 	mov   r2, r0
 	lsl		r0, r0, #4		//r0 = r0*20
+	//Generate offset to change tile in the game array
 
 	lsl		r8, r2, #2
 	add		r0, r8
@@ -45,6 +56,8 @@ hilms:
 	//lsl		r0, r0, #4		//Multiply by size
 	lsl 	r7, #27
 	lsr  	r7, #27
+		//Put Fuel or Enemy Car in game based on random number generatored
+
 next1:
 	cmp		r7, #2
 	bgt		next2
